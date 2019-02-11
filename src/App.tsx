@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Query, QueryResult } from 'react-apollo';
 
-import { gqlGetElementGql } from './graphql/land';
+import { gqlGetElement } from './graphql/land';
 import { GetElement,
          GetElementVariables } from './graphql/land/GetElement';
 
@@ -16,7 +16,7 @@ import { GetExpandedNodes } from './graphql/local/GetExpandedNodes';
 import { gqlGetSelectedRadioButton } from './graphql/local';
 import { GetSelectedRadioButton } from './graphql/local/GetSelectedRadioButton';
 
-import { gqlGetProcessGql } from './graphql/land';
+import { gqlGetProcess } from './graphql/land';
 import { GetProcess,
          GetProcessVariables } from './graphql/land/GetProcess';
 
@@ -247,7 +247,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
 
   render() {
     return (
-      <ProcessQuery query={gqlGetProcessGql} variables={{ id: this.props.id }}>
+      <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>
         {(processQueryResult) => {
            return this.renderProcessQuery(processQueryResult);
         }}
@@ -263,7 +263,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
 class ElementQuery extends Query<GetElement, GetElementVariables> {}
 
 const ElementX = ({ id }: GetElementVariables) => (
-  <ElementQuery query={gqlGetElementGql} variables={{ id }}>
+  <ElementQuery query={gqlGetElement} variables={{ id }}>
     {({ loading, error, data }) => {
        if (loading) { return <div>Loading</div>; }
        if (error) { return <div>Error</div>; }
@@ -285,7 +285,7 @@ class ElementY extends Component<GetElementVariables, {}> {
 
   render() {
     return (
-      <ElementQuery query={gqlGetElementGql} variables={{ id: this.props.id }}>
+      <ElementQuery query={gqlGetElement} variables={{ id: this.props.id }}>
         {({ loading, error, data }) => {
            if (loading) { return <div>Loading</div>; }
            if (error) { return <div>Error</div>; }
