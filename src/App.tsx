@@ -25,19 +25,15 @@ import * as rst from 'react-sortable-tree';
 import SortableTree,
        { FullTree } from 'react-sortable-tree';
 
-
 // import * as treeUtils from 'react-sortable-tree/utils/tree-data-utils';
 // treeUtils.walk
 
 import { Button, ButtonGroup } from 'reactstrap';
 
-// import gql from 'graphql-tag';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-sortable-tree/style.css';
 import './App.css';
 import { ApolloClient } from 'apollo-client';
-// import { debug } from 'util';
 
 // type TreeProps = ReactSortableTreeProps;
 // type TreeProps = GetElements & ReactSortableTreeProps;
@@ -55,10 +51,12 @@ function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
 interface TreeState extends FullTree {}
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
+type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
+
 class ExpandedNodesQuery extends Query<GetExpandedNodes> {}
+type ExpandedNodesQueryResult = QueryResult<GetExpandedNodes>;
 
 class ProcessTree extends Component<GetProcessVariables, TreeState> {
-  // private nodesExpansion: Map<NumberOrStringArray, boolean> = new Map();
 
   constructor(props: GetProcessVariables) {
     super(props);
@@ -85,7 +83,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
 
   renderWithQueries(
     processQueryResult: QueryResult,
-    getExpandedNodesResult: QueryResult)
+    getExpandedNodesResult: ExpandedNodesQueryResult)
   {
     if(processQueryResult.loading ||
        getExpandedNodesResult.loading)
@@ -226,18 +224,17 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
   }
 
   renderExpandedNodesQuery(
-    processQueryResult: QueryResult,
-    getExpandedNodesResult: QueryResult)
+    processQueryResult: ProcessQueryResult,
+    getExpandedNodesResult: ExpandedNodesQueryResult)
   {
     return this.renderWithQueries(
       processQueryResult, getExpandedNodesResult);
   }
 
-  renderProcessQuery(processQueryResult: QueryResult) {
+  renderProcessQuery(processQueryResult: ProcessQueryResult) {
     return (
       <ExpandedNodesQuery query={gqlGetExpandedNodes}>
-        {(getExpandedNodesResult) => {
-           // debugger;
+        {(getExpandedNodesResult: ExpandedNodesQueryResult) => {
            return this.renderExpandedNodesQuery(
              processQueryResult, getExpandedNodesResult);
         }}
