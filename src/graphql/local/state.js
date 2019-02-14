@@ -59,13 +59,34 @@ type ProcessTreeItemLocalState {
   expanded: Boolean!
 }
 
-extend type Query {
+type Mutation {
+  setProcessTreeItemLocalState(
+    text: path: [String!]!
+    expanded: Boolean!
+  ): ProcessTreeItemLocalState!
+}
+
+type Query {
   treeItem: ProcessTreeItemLocalState!
   selectedRadioButton: Int!
 }
 `;
 
 const resolvers = {
+  Mutation: {
+    toggleTodo: (_, variables, { cache, getCacheKey }) => {
+      const id = getCacheKey({ __typename: 'TodoItem', id: variables.id });
+      const fragment = gql`
+        fragment completeTodo on TodoItem {
+          completed
+        }
+      `;
+      const todo = cache.readFragment({ fragment, id });
+      const data = { ...todo, completed: !todo.completed };
+      cache.writeData({ id, data });
+      return null;
+    },
+  },
 };
 
 const defaults = {

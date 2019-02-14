@@ -82,7 +82,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
   // }
 
   renderWithQueries(
-    processQueryResult: QueryResult,
+    processQueryResult: ProcessQueryResult,
     getExpandedNodesResult: ExpandedNodesQueryResult)
   {
     if(processQueryResult.loading ||
@@ -97,11 +97,10 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
       return <div>Error</div>;
     }
 
-    const processData = processQueryResult.data as GetProcess;
+    const processData = processQueryResult.data!;
     const process = processData.process!;
 
-    const expandedNodesData =
-      getExpandedNodesResult.data as GetExpandedNodes;
+    const expandedNodesData = getExpandedNodesResult.data!;
     const expandedNodesPath = expandedNodesData.treeItem.path;
     // const processTreeItems = expandedNodesData.processTreeLocalState.treeItems;
 
