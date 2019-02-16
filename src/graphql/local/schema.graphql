@@ -7,13 +7,12 @@ type ProcessTreeItemLocalState {
 
 type Mutation {
   setProcessTreeItemLocalState(
-    text: path: [String!]!
+    path: [String!]!
     expanded: Boolean!
   ): ProcessTreeItemLocalState!
 }
 
-type Query {
+extend type Query {
   treeItem: ProcessTreeItemLocalState!
   selectedRadioButton: Int!
 }
-

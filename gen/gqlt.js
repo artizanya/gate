@@ -22,7 +22,8 @@ function generateTypesForDir(
 {
   const files = utils.readdirRecursiveSync(dirPath);
   const graphqlFiles = files.reduce((graphqlFiles, fileToCheck) => {
-    if(/\.graphql$/.test(fileToCheck))
+    if(/\.graphql$/.test(fileToCheck) &&
+       !/schema\.graphql$/.test(fileToCheck))
       return graphqlFiles.concat(fileToCheck);
     return graphqlFiles;
   }, []);
