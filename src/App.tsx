@@ -101,8 +101,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
     const process = processData.process!;
 
     const expandedNodesData = getExpandedNodesResult.data!;
-    const expandedNodesPath = expandedNodesData.treeItem.path;
-    // const processTreeItems = expandedNodesData.processTreeLocalState.treeItems;
+    const treeItems = expandedNodesData.treeItems;
 
     // console.log(expandedNodesData);
 
@@ -147,28 +146,17 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
       });
     }
 
-    // for(let treeItem of processTreeItems) {
-    //   const nodeInfo = rst.getNodeAtPath({
-    //     treeData: this.state.treeData,
-    //     getNodeKey,
-    //     path: treeItem.path,
-    //     ignoreCollapsed: false,
-    //   });
-    //
-    //   if(nodeInfo) {
-    //     nodeInfo.node.expanded = treeItem.expanded;
-    //   }
-    // }
+    for(let treeItem of treeItems) {
+      const nodeInfo = rst.getNodeAtPath({
+        treeData: this.state.treeData,
+        getNodeKey,
+        path: treeItem.path,
+        ignoreCollapsed: false,
+      });
 
-    const nodeInfo = rst.getNodeAtPath({
-      treeData: this.state.treeData,
-      getNodeKey,
-      path: expandedNodesPath,
-      ignoreCollapsed: false,
-    });
-
-    if(nodeInfo) {
-      nodeInfo.node.expanded = true;
+      if(nodeInfo) {
+        nodeInfo.node.expanded = true;
+      }
     }
 
     return (
@@ -181,21 +169,21 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              let client = getExpandedNodesResult.client;
+              const client = getExpandedNodesResult.client;
 
               // let data = getExpandedNodesResult.data as GetExpandedNodes;
               // data.treeItem.path = toggleData.path as string[];
               // client.writeData({data});
 
-              let treeItem = {
-                __typename: 'ProcessTreeItemLocalState',
+              const treeItem = {
+                __typename: 'ProcessTreeItem',
                 path: toggleData.path as string[],
                 expanded: toggleData.expanded
               };
 
               client.writeData({
                 data: {
-                  treeItem
+                  treeItems: [treeItem]
                 }
               });
 

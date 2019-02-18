@@ -1,28 +1,48 @@
 // Hey Emacs, this is -*- coding: utf-8 -*-
 
+import gql from 'graphql-tag';
+
+// interface SetProcessTreeItemLocalStateArgs {
+//   path: string;
+//   expanded: boolean;
+// };
+
 const resolvers = {
-  // Mutation: {
-  //   toggleTodo: (_, variables, { cache, getCacheKey }) => {
-  //     const id = getCacheKey({ __typename: 'TodoItem', id: variables.id });
-  //     const fragment = gql`
-  //       fragment completeTodo on TodoItem {
-  //         completed
-  //       }
-  //     `;
-  //     const todo = cache.readFragment({ fragment, id });
-  //     const data = { ...todo, completed: !todo.completed };
-  //     cache.writeData({ id, data });
-  //     return null;
-  //   },
-  // },
+  Mutation: {
+    setProcessTreeItem: (
+      // @ts-ignore
+      obj,
+      // @ts-ignore
+      args,
+      // @ts-ignore
+      context,
+      // @ts-ignore
+      info
+    ) => {
+      const id = context.getCacheKey({
+        __typename: 'ProcessTreeItem',
+        path: args.path,
+      });
+      const fragment = gql`
+        fragment expandedState on ProcessTreeItem {
+          expanded
+        }
+      `;
+      const expandedState = context.cache.readFragment({ fragment, id });
+      const data = { ...expandedState, expanded: args.expanded };
+      context.cache.writeData({ id, data });
+      return null;
+    },
+  },
 };
 
 const defaults = {
-  treeItem: {
-    __typename: 'ProcessTreeItemLocalState',
-    path: [],
-    expanded: false
-  },
+  // treeItems: [{
+  //     __typename: 'ProcessTreeItem',
+  //     path: [],
+  //     expanded: false
+  // }],
+  treeItems: [],
   selectedRadioButton: 1
 };
 

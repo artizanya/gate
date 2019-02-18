@@ -1,7 +1,7 @@
 # Hey Emacs, this is -*- coding: utf-8 -*-
 
 query GetExpandedNodes {
-  treeItem @client {
+  treeItems @client {
     path
   }
 }

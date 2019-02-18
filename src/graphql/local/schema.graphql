@@ -1,18 +1,18 @@
 # Hey Emacs, this is -*- coding: utf-8 -*-
 
-type ProcessTreeItemLocalState {
+type ProcessTreeItem {
   path: [String!]!
   expanded: Boolean!
 }
 
 type Mutation {
-  setProcessTreeItemLocalState(
+  setProcessTreeItem(
     path: [String!]!
     expanded: Boolean!
   ): ProcessTreeItemLocalState!
 }
 
 extend type Query {
-  treeItem: ProcessTreeItemLocalState!
+  treeItems: [ProcessTreeItem!]!
   selectedRadioButton: Int!
 }

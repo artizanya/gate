@@ -6,13 +6,13 @@
 // GraphQL query operation: GetExpandedNodes
 // ====================================================
 
-export interface GetExpandedNodes_treeItem {
-  __typename: "ProcessTreeItemLocalState";
+export interface GetExpandedNodes_treeItems {
+  __typename: "ProcessTreeItem";
   path: string[];
 }
 
 export interface GetExpandedNodes {
-  treeItem: GetExpandedNodes_treeItem;
+  treeItems: GetExpandedNodes_treeItems[];
 }
 
 /* tslint:disable */
