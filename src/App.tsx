@@ -4,11 +4,15 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import { Query, QueryResult } from 'react-apollo';
+import { Query, QueryResult, Mutation } from 'react-apollo';
 
 import { gqlGetElement } from './graphql/land';
 import { GetElement,
          GetElementVariables } from './graphql/land/GetElement';
+
+import { gqlGetProcess } from './graphql/land';
+import { GetProcess,
+         GetProcessVariables } from './graphql/land/GetProcess';
 
 import { gqlGetExpandedNodes } from './graphql/local';
 import { GetExpandedNodes } from './graphql/local/GetExpandedNodes';
@@ -16,9 +20,8 @@ import { GetExpandedNodes } from './graphql/local/GetExpandedNodes';
 import { gqlGetSelectedRadioButton } from './graphql/local';
 import { GetSelectedRadioButton } from './graphql/local/GetSelectedRadioButton';
 
-import { gqlGetProcess } from './graphql/land';
-import { GetProcess,
-         GetProcessVariables } from './graphql/land/GetProcess';
+import { gqlSetExpandedNodes } from './graphql/local';
+import { SetExpandedNodes } from './graphql/local/SetExpandedNodes';
 
 import * as rst from 'react-sortable-tree';
 
@@ -55,6 +58,8 @@ type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 
 class ExpandedNodesQuery extends Query<GetExpandedNodes> {}
 type ExpandedNodesQueryResult = QueryResult<GetExpandedNodes>;
+
+class SetExpandedNodesMutation extends Mutation<SetExpandedNodes> {};
 
 class ProcessTree extends Component<GetProcessVariables, TreeState> {
 
@@ -169,23 +174,23 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              const client = getExpandedNodesResult.client;
+              // const client = getExpandedNodesResult.client;
 
               // let data = getExpandedNodesResult.data as GetExpandedNodes;
               // data.treeItem.path = toggleData.path as string[];
               // client.writeData({data});
 
-              const treeItem = {
-                __typename: 'ProcessTreeItem',
-                path: toggleData.path as string[],
-                expanded: toggleData.expanded
-              };
+              // const treeItem = {
+              //   __typename: 'ProcessTreeItem',
+              //   path: toggleData.path as string[],
+              //   expanded: toggleData.expanded
+              // };
 
-              client.writeData({
-                data: {
-                  treeItems: [treeItem]
-                }
-              });
+              // client.writeData({
+              //   data: {
+              //     treeItems: [treeItem]
+              //   }
+              // });
 
               console.log(toggleData.path, toggleData.expanded);
               // this.nodesExpansion.set(

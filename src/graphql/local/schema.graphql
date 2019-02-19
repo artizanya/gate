@@ -5,11 +5,11 @@ type ProcessTreeItem {
   expanded: Boolean!
 }
 
-type Mutation {
+extend type Mutation {
   setProcessTreeItem(
     path: [String!]!
     expanded: Boolean!
-  ): ProcessTreeItemLocalState!
+  ): ProcessTreeItem!
 }
 
 extend type Query {

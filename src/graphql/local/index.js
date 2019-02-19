@@ -8,3 +8,6 @@ export const gqlGetExpandedNodes =
 
 export const gqlGetSelectedRadioButton =
   gqlLoader('./GetSelectedRadioButton.graphql');
+
+export const gqlSetExpandedNodes =
+  gqlLoader('./SetExpandedNodes.graphql');
