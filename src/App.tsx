@@ -4,7 +4,7 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import { Query, QueryResult, Mutation } from 'react-apollo';
+import { Query, QueryResult, Mutation, MutationFn } from 'react-apollo';
 
 import { gqlGetElement } from './graphql/land';
 import { GetElement,
@@ -21,7 +21,8 @@ import { gqlGetSelectedRadioButton } from './graphql/local';
 import { GetSelectedRadioButton } from './graphql/local/GetSelectedRadioButton';
 
 import { gqlSetExpandedNodes } from './graphql/local';
-import { SetExpandedNodes } from './graphql/local/SetExpandedNodes';
+import { SetExpandedNodes, SetExpandedNodesVariables
+} from './graphql/local/SetExpandedNodes';
 
 import * as rst from 'react-sortable-tree';
 
@@ -59,7 +60,8 @@ type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 class ExpandedNodesQuery extends Query<GetExpandedNodes> {}
 type ExpandedNodesQueryResult = QueryResult<GetExpandedNodes>;
 
-class SetExpandedNodesMutation extends Mutation<SetExpandedNodes> {};
+class SetExpandedNodesMutation extends Mutation<SetExpandedNodes> {}
+type SetExpandedNodesMutationFn = MutationFn<SetExpandedNodes>;
 
 class ProcessTree extends Component<GetProcessVariables, TreeState> {
 
@@ -86,9 +88,10 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
   // renderProcessQuery = (queryResult: QueryResult) => {
   // }
 
-  renderWithQueries(
+  renderWithOperations(
     processQueryResult: ProcessQueryResult,
-    getExpandedNodesResult: ExpandedNodesQueryResult)
+    getExpandedNodesResult: ExpandedNodesQueryResult,
+    setExpandedNodes: SetExpandedNodesMutationFn)
   {
     if(processQueryResult.loading ||
        getExpandedNodesResult.loading)
@@ -174,6 +177,12 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
+              setExpandedNodes({
+                variables: {
+                  path: toggleData.path as string[],
+                  expanded: toggleData.expanded
+                } as SetExpandedNodesVariables
+              });
               // const client = getExpandedNodesResult.client;
 
               // let data = getExpandedNodesResult.data as GetExpandedNodes;
@@ -215,19 +224,34 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
     );
   }
 
-  renderExpandedNodesQuery(
+  renderLocalMutation(
+    processQueryResult: ProcessQueryResult,
+    getExpandedNodesResult: ExpandedNodesQueryResult,
+    setExpandedNodes: SetExpandedNodesMutationFn)
+  {
+    return this.renderWithOperations(
+      processQueryResult, getExpandedNodesResult, setExpandedNodes);
+  }
+
+  renderLocalQuery(
     processQueryResult: ProcessQueryResult,
     getExpandedNodesResult: ExpandedNodesQueryResult)
   {
-    return this.renderWithQueries(
-      processQueryResult, getExpandedNodesResult);
+    return (
+      <SetExpandedNodesMutation mutation={gqlSetExpandedNodes}>
+        {(setExpandedNodes: SetExpandedNodesMutationFn) => {
+           return this.renderLocalMutation(
+             processQueryResult, getExpandedNodesResult, setExpandedNodes);
+        }}
+      </SetExpandedNodesMutation>
+    );
   }
 
-  renderProcessQuery(processQueryResult: ProcessQueryResult) {
+  renderLandQuery(processQueryResult: ProcessQueryResult) {
     return (
       <ExpandedNodesQuery query={gqlGetExpandedNodes}>
         {(getExpandedNodesResult: ExpandedNodesQueryResult) => {
-           return this.renderExpandedNodesQuery(
+           return this.renderLocalQuery(
              processQueryResult, getExpandedNodesResult);
         }}
       </ExpandedNodesQuery>
@@ -238,7 +262,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
     return (
       <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>
         {(processQueryResult) => {
-           return this.renderProcessQuery(processQueryResult);
+           return this.renderLandQuery(processQueryResult);
         }}
       </ProcessQuery>
     );

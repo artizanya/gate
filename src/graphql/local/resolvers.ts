@@ -1,6 +1,6 @@
 // Hey Emacs, this is -*- coding: utf-8 -*-
 
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 
 // interface SetProcessTreeItemLocalStateArgs {
 //   path: string;
@@ -19,18 +19,33 @@ const resolvers = {
       // @ts-ignore
       info
     ) => {
+      const treeItem = {
+        __typename: 'ProcessTreeItem',
+        path: args.path,
+        expanded: args.expanded
+      };
+
+      context.cache.writeData({
+        data: {
+          treeItems: [treeItem]
+        }
+      });
+
       const id = context.getCacheKey({
         __typename: 'ProcessTreeItem',
         path: args.path,
       });
-      const fragment = gql`
-        fragment expandedState on ProcessTreeItem {
-          expanded
-        }
-      `;
-      const expandedState = context.cache.readFragment({ fragment, id });
-      const data = { ...expandedState, expanded: args.expanded };
-      context.cache.writeData({ id, data });
+
+      console.log('xxxxxx',  args, id);
+
+      // const fragment = gql`
+      //   fragment expandedState on ProcessTreeItem {
+      //     expanded
+      //   }
+      // `;
+      // const expandedState = context.cache.readFragment({ fragment, id });
+      // const data = { ...expandedState, expanded: args.expanded };
+      // context.cache.writeData({ id, data });
       return null;
     },
   },
