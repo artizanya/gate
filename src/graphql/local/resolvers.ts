@@ -2,6 +2,9 @@
 
 // import gql from 'graphql-tag';
 
+import { gqlGetExpandedNodes } from './index';
+
+
 // interface SetProcessTreeItemLocalStateArgs {
 //   path: string;
 //   expanded: boolean;
@@ -22,21 +25,32 @@ const resolvers = {
       const treeItem = {
         __typename: 'ProcessTreeItem',
         path: args.path,
-        expanded: args.expanded
+        // expanded: args.expanded
       };
 
-      context.cache.writeData({
+      // context.cache.writeData({
+      //   data: {
+      //     treeItems: [treeItem]
+      //   }
+      // });
+
+      // const id = context.getCacheKey({
+      //   __typename: 'ProcessTreeItem',
+      //   path: args.path,
+      // });
+
+      const { treeItems } = context.cache.readQuery({
+        query: gqlGetExpandedNodes,
+      });
+
+      console.log('xxxxxx',  treeItems);
+
+      context.cache.writeQuery({
+        query: gqlGetExpandedNodes,
         data: {
-          treeItems: [treeItem]
+          treeItems: [treeItem],
         }
       });
-
-      const id = context.getCacheKey({
-        __typename: 'ProcessTreeItem',
-        path: args.path,
-      });
-
-      console.log('xxxxxx',  args, id);
 
       // const fragment = gql`
       //   fragment expandedState on ProcessTreeItem {
