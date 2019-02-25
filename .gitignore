@@ -6,6 +6,7 @@
 
 # generators
 /gen/schema
+src/graphql/*/types.ts
 
 # testing
 /coverage

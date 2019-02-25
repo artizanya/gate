@@ -7,14 +7,25 @@
 // https://github.com/dangcuuson/graphql-schema-typescript
 // https://github.com/19majkel94/type-graphql
 
-
 // https://github.com/typeorm/typeorm
 
-const { generateTypesForDir } = require('./gqlt');
+const graphqlGroups = [
+  '../src/graphql/land',
+  '../src/graphql/local',
+];
 
-console.log('');
+const { execSync } = require('child_process');
+
 console.log('Generating typescript types for graphql files...');
-generateTypesForDir('../src',
-                    './schema/land.json',
-                    '../src/graphql/local/schema.graphql',
-                    'npx --no-install apollo');
+
+for(let graphqlGroup of graphqlGroups) {
+  console.log(graphqlGroup);
+  execSync('npx --no-install apollo client:codegen' +
+           ' --outputFlat --addTypename --passthroughCustomScalars' +
+           ' --customScalarsPrefix="scalars."' +
+           ' --includes="' + graphqlGroup + '/*.graphql"' +
+           ' --localSchemaFile="./schema/land.json"' +
+           ' --target=typescript' +
+           ' "' + graphqlGroup + '/types.ts"',
+           { encoding: 'utf8' });
+}

@@ -7,22 +7,19 @@ import { Component } from 'react';
 import { Query, QueryResult, Mutation, MutationFn } from 'react-apollo';
 
 import { gqlGetElement } from './graphql/land';
-import { GetElement,
-         GetElementVariables } from './graphql/land/GetElement';
+import { GetElement, GetElementVariables } from './graphql/land';
 
 import { gqlGetProcess } from './graphql/land';
-import { GetProcess,
-         GetProcessVariables } from './graphql/land/GetProcess';
+import { GetProcess, GetProcessVariables } from './graphql/land';
 
 import { gqlGetExpandedNodes } from './graphql/local';
-import { GetExpandedNodes } from './graphql/local/GetExpandedNodes';
+import { GetExpandedNodes } from './graphql/local';
 
 import { gqlGetSelectedRadioButton } from './graphql/local';
-import { GetSelectedRadioButton } from './graphql/local/GetSelectedRadioButton';
+import { GetSelectedRadioButton } from './graphql/local';
 
 import { gqlSetExpandedNodes } from './graphql/local';
-import { SetExpandedNodes, SetExpandedNodesVariables
-} from './graphql/local/SetExpandedNodes';
+import { SetExpandedNodes, SetExpandedNodesVariables } from './graphql/local';
 
 import * as rst from 'react-sortable-tree';
 
