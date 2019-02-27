@@ -22,7 +22,7 @@ const resolvers = {
       // @ts-ignore
       info
     ) => {
-      const treeItem = {
+      const processTreeItem = {
         __typename: 'ProcessTreeItem',
         path: args.path,
         // expanded: args.expanded
@@ -39,16 +39,16 @@ const resolvers = {
       //   path: args.path,
       // });
 
-      const { treeItems } = context.cache.readQuery({
+      const { processTreeItems } = context.cache.readQuery({
         query: gqlGetExpandedNodes,
       });
 
-      console.log('xxxxxx',  treeItems);
+      console.log('xxxxxx',  processTreeItems);
 
       context.cache.writeQuery({
         query: gqlGetExpandedNodes,
         data: {
-          treeItems: [treeItem],
+          processTreeItems: [processTreeItem],
         }
       });
 
@@ -71,7 +71,7 @@ const defaults = {
   //     path: [],
   //     expanded: false
   // }],
-  treeItems: [],
+  processTreeItems: [],
   selectedRadioButton: 1
 };
 

@@ -106,7 +106,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
     const process = processData.process!;
 
     const expandedNodesData = getExpandedNodesResult.data!;
-    const treeItems = expandedNodesData.treeItems;
+    const processTreeItems = expandedNodesData.processTreeItems;
 
     // console.log(expandedNodesData);
 
@@ -151,7 +151,7 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
       });
     }
 
-    for(let treeItem of treeItems) {
+    for(let treeItem of processTreeItems) {
       const nodeInfo = rst.getNodeAtPath({
         treeData: this.state.treeData,
         getNodeKey,
