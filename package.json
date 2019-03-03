@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "apollo": "^2.5.1",
-    "apollo-cache-inmemory": "^1.4.3",
+    "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.4.13",
     "apollo-client-preset": "^1.0.8",
     "apollo-link-state": "^0.4.2",
@@ -19,6 +19,7 @@
     "react-dom": "^16.8.2",
     "react-sortable-tree": "^2.6.0",
     "reactstrap": "^7.1.0",
+    "type-graphql": "file:./src-dep/type-graphql/build/package",
     "xregexp": "^4.2.4"
   },
   "scripts": {

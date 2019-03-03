@@ -3,7 +3,7 @@
 // import gql from 'graphql-tag';
 
 import { gqlGetExpandedNodes } from './index';
-
+// import { buildSchema } from "type-graphql";
 
 // interface SetProcessTreeItemLocalStateArgs {
 //   path: string;
@@ -43,7 +43,7 @@ const resolvers = {
         query: gqlGetExpandedNodes,
       });
 
-      console.log('xxxxxx',  processTreeItems);
+       console.log('xxxxxx',  processTreeItems);
 
       context.cache.writeQuery({
         query: gqlGetExpandedNodes,
