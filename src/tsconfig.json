@@ -10,7 +10,10 @@
       ],
       "apollo-link-http" : [
         "src-dep/apollo-link/packages/apollo-link-http/src"
-      ]
+      ],
+      "apollo-link-state" : [
+        "src-dep/apollo-link-state/packages/apollo-link-state/src"
+      ],
     }
   }
 }
