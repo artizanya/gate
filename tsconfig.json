@@ -4,7 +4,7 @@
     "module": "esnext",
     "maxNodeModuleJsDepth": 10,
     "allowSyntheticDefaultImports": true,
-    "target": "es5",
+    "target": "es2017",
     "lib": ["es2017", "dom", "esnext.asynciterable"],
     "sourceMap": true,
     "allowJs": true,
@@ -19,7 +19,9 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",

@@ -3,12 +3,12 @@
 // import gql from 'graphql-tag';
 
 import { gqlGetExpandedNodes } from './index';
-// import { buildSchema } from "type-graphql";
 
-// interface SetProcessTreeItemLocalStateArgs {
-//   path: string;
-//   expanded: boolean;
-// };
+// import { buildTypeDefsAndResolvers } from "type-graphql";
+// import { createResolversMap } from "type-graphql/dist/utils/createResolversMap";
+// import { printSchema } from 'graphql'
+
+// import { buildSchemaSync } from "type-graphql";
 
 const resolvers = {
   Mutation: {

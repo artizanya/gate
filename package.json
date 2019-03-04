@@ -19,6 +19,7 @@
     "react-dom": "^16.8.2",
     "react-sortable-tree": "^2.6.0",
     "reactstrap": "^7.1.0",
+    "reflect-metadata": "^0.1.13",
     "type-graphql": "file:./src-dep/type-graphql/build/package",
     "xregexp": "^4.2.4"
   },
