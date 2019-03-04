@@ -20,15 +20,6 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "baseUrl": "."
-    // "paths": {
-    //   "type-graphql": ["src-dep/type-graphql/src"],
-    //   "apollo-cache-inmemory": [
-    //     "src-dep/apollo-client/packages/apollo-cache-inmemory/src"
-    //   ],
-    //   "apollo-link-http" : [
-    //     "src-dep/apollo-link/packages/apollo-link-http/src"
-    //   ]
-    // }
   },
   "exclude": [
     "node_modules",

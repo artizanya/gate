@@ -1,19 +1,7 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.ide.json",
   "compilerOptions": {
-    "noEmit": true,
-    "baseUrl": "..",
-    "paths": {
-      "type-graphql": ["src-dep/type-graphql/src"],
-      "apollo-cache-inmemory": [
-        "src-dep/apollo-client/packages/apollo-cache-inmemory/src"
-      ],
-      "apollo-link-http" : [
-        "src-dep/apollo-link/packages/apollo-link-http/src"
-      ],
-      "apollo-link-state" : [
-        "src-dep/apollo-link-state/packages/apollo-link-state/src"
-      ],
-    }
+    "jsx": "react",
+    "baseUrl": ".."
   }
 }
