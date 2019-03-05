@@ -9,7 +9,7 @@ import 'reflect-metadata';
 // import { printSchema } from 'graphql'
 // import { emitSchemaDefinitionFile } from 'type-graphql';
 
-import { buildSchemaSync } from 'type-graphql';
+// import { buildSchemaSync } from 'type-graphql';
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()

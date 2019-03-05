@@ -24,14 +24,18 @@ const cache = new InMemoryCache();
 
 const stateLink = withClientState({
   cache,
-  resolvers: localResolvers,
   defaults: localDefaults,
-  typeDefs: localTypeDefs
+  resolvers: localResolvers,
+  typeDefs: localTypeDefs,
 });
 
 const client = new ApolloClient({
-  cache,
   link: ApolloLink.from([stateLink, httpLink]),
+  // TODO: Find why there is a duplicaton of the following
+  //       fields whith stateLink.
+  cache,
+  resolvers: localResolvers,
+  typeDefs: localTypeDefs,
 });
 
 ReactDOM.render(

@@ -6,6 +6,8 @@
     "paths": {
       "type-graphql": ["src-dep/type-graphql/src"],
       "react-apollo" : ["src-dep/react-apollo/src"],
+      "apollo-client": ["src-dep/apollo-client/packages/apollo-client/src"],
+      "apollo-cache": ["src-dep/apollo-client/packages/apollo-cache/src"],
       "apollo-cache-inmemory": [
         "src-dep/apollo-client/packages/apollo-cache-inmemory/src"
       ],

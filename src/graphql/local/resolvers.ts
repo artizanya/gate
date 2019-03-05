@@ -43,7 +43,7 @@ const resolvers = {
         query: gqlGetExpandedNodes,
       });
 
-       console.log('xxxxxx',  processTreeItems);
+      console.log('xxxxxx',  processTreeItems);
 
       context.cache.writeQuery({
         query: gqlGetExpandedNodes,
@@ -63,6 +63,36 @@ const resolvers = {
       return null;
     },
   },
+
+  // Query: {
+  //   processTreeItems: (
+  //     // @ts-ignore
+  //     obj,
+  //     // @ts-ignore
+  //     args,
+  //     // @ts-ignore
+  //     context,
+  //     // @ts-ignore
+  //     info
+  //   ) => {
+  //     console.log('yyyyyy0');
+  //     return context.cache.readQuery().processTreeItems;
+  //   },
+
+  //   selectedRadioButton: (
+  //     // @ts-ignore
+  //     obj,
+  //     // @ts-ignore
+  //     args,
+  //     // @ts-ignore
+  //     context,
+  //     // @ts-ignore
+  //     info
+  //   ) => {
+  //     console.log('yyyyyy1');
+  //     return context.cache.readQuery().selectedRadioButton;
+  //   }
+  // }
 };
 
 const defaults = {
