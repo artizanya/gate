@@ -2,7 +2,7 @@
 
 import 'reflect-metadata';
 
-// import { gqlGetExpandedNodes } from './index';
+import { gqlGetExpandedNodes } from './index';
 
 // import { buildTypeDefsAndResolvers } from "type-graphql";
 // import { createResolversMap } from "type-graphql/dist/utils/createResolversMap";
@@ -10,7 +10,12 @@ import 'reflect-metadata';
 // import { emitSchemaDefinitionFile } from 'type-graphql';
 
 // import { buildSchemaSync } from 'type-graphql';
-import { Field, ObjectType } from 'type-graphql';
+import { Field,
+         ObjectType,
+         Resolver,
+         // ResolverInterface,
+         Mutation,
+         Arg, Ctx } from 'type-graphql';
 
 @ObjectType()
 export class ProcessTreeItem {
@@ -21,7 +26,37 @@ export class ProcessTreeItem {
   expanded: boolean;
 }
 
+@Resolver(of => ProcessTreeItem)
+// export class RecipeResolver implements ResolverInterface<ProcessTreeItem> {
+export class RecipeResolver {
+  @Mutation(returns => ProcessTreeItem)
+  setProcessTreeItem(
+    @Arg("path") path: string[],
+    @Arg("expanded") expanded: boolean,
+    @Ctx() context: any,
+  ): ProcessTreeItem {
+    const processTreeItem = {
+      __typename: 'ProcessTreeItem',
+      path,
+      expanded,
+    };
 
+    const { processTreeItems } = context.cache.readQuery({
+      query: gqlGetExpandedNodes,
+    });
+
+    console.log('xxxxxx',  processTreeItems);
+
+    context.cache.writeQuery({
+      query: gqlGetExpandedNodes,
+      data: {
+        processTreeItems: [processTreeItem],
+      }
+    });
+
+    return processTreeItem;
+  }
+}
 
 // const resolvers = {
 //   Mutation: {
