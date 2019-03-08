@@ -1,99 +1,74 @@
 // Hey Emacs, this is -*- coding: utf-8 -*-
 
-// import gql from 'graphql-tag';
+import 'reflect-metadata';
 
 import { gqlGetExpandedNodes } from './index';
 
 // import { buildTypeDefsAndResolvers } from "type-graphql";
-// import { createResolversMap } from "type-graphql/dist/utils/createResolversMap";
-// import { printSchema } from 'graphql'
+// import { emitSchemaDefinitionFile } from 'type-graphql';
 
-// import { buildSchemaSync } from "type-graphql";
+import { buildSchemaSync } from 'type-graphql';
+// import { createResolversMap } from 'type-graphql';
+import { printSchema } from 'graphql';
 
-const resolvers = {
-  Mutation: {
-    setProcessTreeItem: (
-      // @ts-ignore
-      obj,
-      // @ts-ignore
-      args,
-      // @ts-ignore
-      context,
-      // @ts-ignore
-      info
-    ) => {
-      const processTreeItem = {
-        __typename: 'ProcessTreeItem',
-        path: args.path,
-        // expanded: args.expanded
-      };
+// import { buildSchemaSync } from 'type-graphql';
+import { Field,
+         ObjectType,
+         Resolver,
+         // ResolverInterface,
+         Mutation,
+         Arg, Ctx } from 'type-graphql';
 
-      // context.cache.writeData({
-      //   data: {
-      //     treeItems: [treeItem]
-      //   }
-      // });
+@ObjectType()
+class ProcessTreeItem {
+  @Field(type => [String])
+  path: string[];
 
-      // const id = context.getCacheKey({
-      //   __typename: 'ProcessTreeItem',
-      //   path: args.path,
-      // });
+  @Field(type => Boolean)
+  expanded: boolean;
+}
 
-      const { processTreeItems } = context.cache.readQuery({
-        query: gqlGetExpandedNodes,
-      });
+@Resolver(of => ProcessTreeItem)
+// export class RecipeResolver implements ResolverInterface<ProcessTreeItem> {
+class ProcessTreeItemResolver {
+  @Mutation(returns => ProcessTreeItem)
+  setProcessTreeItem(
+    @Arg('path') path: string[],
+    @Arg('expanded') expanded: boolean,
+    @Ctx() context: any,
+  ): ProcessTreeItem {
+    const processTreeItem = {
+      __typename: 'ProcessTreeItem',
+      path,
+      expanded,
+    };
 
-      console.log('xxxxxx',  processTreeItems);
+    const { processTreeItems } = context.cache.readQuery({
+      query: gqlGetExpandedNodes,
+    });
 
-      context.cache.writeQuery({
-        query: gqlGetExpandedNodes,
-        data: {
-          processTreeItems: [processTreeItem],
-        }
-      });
+    console.log('xxxxxx',  processTreeItems);
 
-      // const fragment = gql`
-      //   fragment expandedState on ProcessTreeItem {
-      //     expanded
-      //   }
-      // `;
-      // const expandedState = context.cache.readFragment({ fragment, id });
-      // const data = { ...expandedState, expanded: args.expanded };
-      // context.cache.writeData({ id, data });
-      return null;
-    },
-  },
+    context.cache.writeQuery({
+      query: gqlGetExpandedNodes,
+      data: {
+        processTreeItems: [processTreeItem],
+      }
+    });
 
-  // Query: {
-  //   processTreeItems: (
-  //     // @ts-ignore
-  //     obj,
-  //     // @ts-ignore
-  //     args,
-  //     // @ts-ignore
-  //     context,
-  //     // @ts-ignore
-  //     info
-  //   ) => {
-  //     console.log('yyyyyy0');
-  //     return context.cache.readQuery().processTreeItems;
-  //   },
+    return processTreeItem;
+  }
+}
 
-  //   selectedRadioButton: (
-  //     // @ts-ignore
-  //     obj,
-  //     // @ts-ignore
-  //     args,
-  //     // @ts-ignore
-  //     context,
-  //     // @ts-ignore
-  //     info
-  //   ) => {
-  //     console.log('yyyyyy1');
-  //     return context.cache.readQuery().selectedRadioButton;
-  //   }
-  // }
-};
+const schema = buildSchemaSync({
+  resolvers: [ProcessTreeItemResolver],
+  emitSchemaFile: false,
+});
+
+// const resolvers = createResolversMap(schema);
+const resolvers = null;
+
+console.log(printSchema(schema));
 
 const defaults = {
   // treeItems: [{

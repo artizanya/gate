@@ -34,8 +34,8 @@ const client = new ApolloClient({
   // TODO: Find why there is a duplicaton of the following
   //       fields whith stateLink.
   cache,
-  resolvers: localResolvers,
-  typeDefs: localTypeDefs,
+  // resolvers: localResolvers,
+  // typeDefs: localTypeDefs,
 });
 
 ReactDOM.render(
