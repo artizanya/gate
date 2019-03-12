@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
@@ -34,8 +36,8 @@ const client = new ApolloClient({
   // TODO: Find why there is a duplicaton of the following
   //       fields whith stateLink.
   cache,
-  // resolvers: localResolvers,
-  // typeDefs: localTypeDefs,
+  resolvers: localResolvers,
+  typeDefs: localTypeDefs,
 });
 
 ReactDOM.render(

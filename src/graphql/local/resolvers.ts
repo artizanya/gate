@@ -1,74 +1,99 @@
 // Hey Emacs, this is -*- coding: utf-8 -*-
 
-import 'reflect-metadata';
+// import gql from 'graphql-tag';
 
 import { gqlGetExpandedNodes } from './index';
+import { SetExpandedNodesVariables } from './types';
 
 // import { buildTypeDefsAndResolvers } from "type-graphql";
-// import { emitSchemaDefinitionFile } from 'type-graphql';
+// import { createResolversMap } from "type-graphql/dist/utils/createResolversMap";
+// import { printSchema } from 'graphql'
 
-import { buildSchemaSync } from 'type-graphql';
-// import { createResolversMap } from 'type-graphql';
-import { printSchema } from 'graphql';
+// import { buildSchemaSync } from "type-graphql";
 
-// import { buildSchemaSync } from 'type-graphql';
-import { Field,
-         ObjectType,
-         Resolver,
-         // ResolverInterface,
-         Mutation,
-         Arg, Ctx } from 'type-graphql';
+const resolvers = {
+  Mutation: {
+    setProcessTreeItem: (
+      // @ts-ignore
+      obj,
+      args: SetExpandedNodesVariables,
+      // @ts-ignore
+      context,
+      // @ts-ignore
+      info
+    ) => {
+      const processTreeItem = {
+        __typename: 'ProcessTreeItem',
+        path: args.path,
+        // expanded: args.expanded
+      };
 
-@ObjectType()
-class ProcessTreeItem {
-  @Field(type => [String])
-  path: string[];
+      // context.cache.writeData({
+      //   data: {
+      //     treeItems: [treeItem]
+      //   }
+      // });
 
-  @Field(type => Boolean)
-  expanded: boolean;
-}
+      // const id = context.getCacheKey({
+      //   __typename: 'ProcessTreeItem',
+      //   path: args.path,
+      // });
 
-@Resolver(of => ProcessTreeItem)
-// export class RecipeResolver implements ResolverInterface<ProcessTreeItem> {
-class ProcessTreeItemResolver {
-  @Mutation(returns => ProcessTreeItem)
-  setProcessTreeItem(
-    @Arg('path') path: string[],
-    @Arg('expanded') expanded: boolean,
-    @Ctx() context: any,
-  ): ProcessTreeItem {
-    const processTreeItem = {
-      __typename: 'ProcessTreeItem',
-      path,
-      expanded,
-    };
+      const { processTreeItems } = context.cache.readQuery({
+        query: gqlGetExpandedNodes,
+      });
 
-    const { processTreeItems } = context.cache.readQuery({
-      query: gqlGetExpandedNodes,
-    });
+      console.log('xxxxxx',  processTreeItems);
 
-    console.log('xxxxxx',  processTreeItems);
+      context.cache.writeQuery({
+        query: gqlGetExpandedNodes,
+        data: {
+          processTreeItems: [processTreeItem],
+        }
+      });
 
-    context.cache.writeQuery({
-      query: gqlGetExpandedNodes,
-      data: {
-        processTreeItems: [processTreeItem],
-      }
-    });
+      // const fragment = gql`
+      //   fragment expandedState on ProcessTreeItem {
+      //     expanded
+      //   }
+      // `;
+      // const expandedState = context.cache.readFragment({ fragment, id });
+      // const data = { ...expandedState, expanded: args.expanded };
+      // context.cache.writeData({ id, data });
+      return null;
+    },
+  },
 
-    return processTreeItem;
-  }
-}
+  // Query: {
+  //   processTreeItems: (
+  //     // @ts-ignore
+  //     obj,
+  //     // @ts-ignore
+  //     args,
+  //     // @ts-ignore
+  //     context,
+  //     // @ts-ignore
+  //     info
+  //   ) => {
+  //     console.log('yyyyyy0');
+  //     return context.cache.readQuery().processTreeItems;
+  //   },
 
-const schema = buildSchemaSync({
-  resolvers: [ProcessTreeItemResolver],
-  emitSchemaFile: false,
-});
-
-// const resolvers = createResolversMap(schema);
-const resolvers = null;
-
-console.log(printSchema(schema));
+  //   selectedRadioButton: (
+  //     // @ts-ignore
+  //     obj,
+  //     // @ts-ignore
+  //     args,
+  //     // @ts-ignore
+  //     context,
+  //     // @ts-ignore
+  //     info
+  //   ) => {
+  //     console.log('yyyyyy1');
+  //     return context.cache.readQuery().selectedRadioButton;
+  //   }
+  // }
+};
 
 const defaults = {
   // treeItems: [{
