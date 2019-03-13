@@ -12,6 +12,9 @@
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.11",
+    "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
+    "mobx-react-devtools": "^6.1.1",
     "mz": "^2.7.0",
     "react": "^16.8.2",
     "react-apollo": "^2.5.1",
@@ -19,8 +22,6 @@
     "react-dom": "^16.8.2",
     "react-sortable-tree": "^2.6.0",
     "reactstrap": "^7.1.0",
-    "reflect-metadata": "^0.1.13",
-    "type-graphql": "file:./src-dep/type-graphql/build/package",
     "xregexp": "^4.2.4"
   },
   "scripts": {

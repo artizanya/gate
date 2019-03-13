@@ -1,5 +1,6 @@
-// import gql from 'graphql-tag';
+// Hey Emacs, this is -*- coding: utf-8 -*-
 
+// import gql from 'graphql-tag';
 // import * as _ from 'lodash';
 
 import * as React from 'react';

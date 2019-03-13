@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+// Hey Emacs, this is -*- coding: utf-8 -*-
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
