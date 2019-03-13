@@ -5,22 +5,20 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import { Query, QueryResult, Mutation, MutationFn } from 'react-apollo';
+import { Query, QueryResult } from 'react-apollo';
 
 import { gqlGetElement } from './graphql/land';
 import { GetElement, GetElementVariables } from './graphql/land';
 
 import { gqlGetProcess } from './graphql/land';
-import { GetProcess, GetProcessVariables } from './graphql/land';
-
-import { gqlGetExpandedNodes } from './graphql/local';
-import { GetExpandedNodes } from './graphql/local';
+import {
+  GetProcess,
+  GetProcess_process,
+  GetProcessVariables
+} from './graphql/land';
 
 import { gqlGetSelectedRadioButton } from './graphql/local';
 import { GetSelectedRadioButton } from './graphql/local';
-
-import { gqlSetExpandedNodes } from './graphql/local';
-import { SetExpandedNodes, SetExpandedNodesVariables } from './graphql/local';
 
 import * as rst from 'react-sortable-tree';
 
@@ -50,16 +48,28 @@ function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
 //   path: NumberOrStringArray;
 // }
 
+// import {observable} from 'mobx';
+// import {observer} from 'mobx-react';
+// import DevTools from 'mobx-react-devtools';
+//
+// class AppState {
+//   @observable timer = 0;
+//
+//   constructor() {
+//     setInterval(() => {
+//       this.timer += 1;
+//     }, 1000);
+//   }
+//
+//   resetTimer() {
+//     this.timer = 0;
+//   }
+// }
+
 interface TreeState extends FullTree {}
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
 type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
-
-class ExpandedNodesQuery extends Query<GetExpandedNodes> {}
-type ExpandedNodesQueryResult = QueryResult<GetExpandedNodes>;
-
-class SetExpandedNodesMutation extends Mutation<SetExpandedNodes> {}
-type SetExpandedNodesMutationFn = MutationFn<SetExpandedNodes>;
 
 class ProcessTree extends Component<GetProcessVariables, TreeState> {
 
@@ -86,28 +96,20 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
   // renderProcessQuery = (queryResult: QueryResult) => {
   // }
 
-  renderWithOperations(
-    processQueryResult: ProcessQueryResult,
-    getExpandedNodesResult: ExpandedNodesQueryResult,
-    setExpandedNodes: SetExpandedNodesMutationFn)
-  {
-    if(processQueryResult.loading ||
-       getExpandedNodesResult.loading)
-    {
+  renderWithOperations(processQueryResult: ProcessQueryResult) {
+    if(processQueryResult.loading) {
       return <div>Loading</div>;
     }
 
-    if(processQueryResult.error ||
-       getExpandedNodesResult.error)
-    {
+    if(processQueryResult.error) {
       return <div>Error</div>;
     }
 
-    const processData = processQueryResult.data!;
-    const process = processData.process!;
+    const processData = processQueryResult.data as GetProcess;
+    const process = processData.process as GetProcess_process;
 
-    const expandedNodesData = getExpandedNodesResult.data!;
-    const processTreeItems = expandedNodesData.processTreeItems;
+    // const expandedNodesData = getExpandedNodesResult.data!;
+    // const processTreeItems = expandedNodesData.processTreeItems;
 
     // console.log(expandedNodesData);
 
@@ -152,18 +154,18 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
       });
     }
 
-    for(let treeItem of processTreeItems) {
-      const nodeInfo = rst.getNodeAtPath({
-        treeData: this.state.treeData,
-        getNodeKey,
-        path: treeItem.path,
-        ignoreCollapsed: false,
-      });
-
-      if(nodeInfo) {
-        nodeInfo.node.expanded = true;
-      }
-    }
+    // for(let treeItem of processTreeItems) {
+    //   const nodeInfo = rst.getNodeAtPath({
+    //     treeData: this.state.treeData,
+    //     getNodeKey,
+    //     path: treeItem.path,
+    //     ignoreCollapsed: false,
+    //   });
+    //
+    //   if(nodeInfo) {
+    //     nodeInfo.node.expanded = true;
+    //   }
+    // }
 
     return (
       <div style={{ height: 600 }}>
@@ -175,12 +177,13 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              setExpandedNodes({
-                variables: {
-                  path: toggleData.path as string[],
-                  expanded: toggleData.expanded
-                } as SetExpandedNodesVariables
-              });
+              // setExpandedNodes({
+              //   variables: {
+              //     path: toggleData.path as string[],
+              //     expanded: toggleData.expanded
+              //   } as SetExpandedNodesVariables
+              // });
+
               // const client = getExpandedNodesResult.client;
 
               // let data = getExpandedNodesResult.data as GetExpandedNodes;
@@ -222,38 +225,8 @@ class ProcessTree extends Component<GetProcessVariables, TreeState> {
     );
   }
 
-  renderLocalMutation(
-    processQueryResult: ProcessQueryResult,
-    getExpandedNodesResult: ExpandedNodesQueryResult,
-    setExpandedNodes: SetExpandedNodesMutationFn)
-  {
-    return this.renderWithOperations(
-      processQueryResult, getExpandedNodesResult, setExpandedNodes);
-  }
-
-  renderLocalQuery(
-    processQueryResult: ProcessQueryResult,
-    getExpandedNodesResult: ExpandedNodesQueryResult)
-  {
-    return (
-      <SetExpandedNodesMutation mutation={gqlSetExpandedNodes}>
-        {(setExpandedNodes: SetExpandedNodesMutationFn) => {
-           return this.renderLocalMutation(
-             processQueryResult, getExpandedNodesResult, setExpandedNodes);
-        }}
-      </SetExpandedNodesMutation>
-    );
-  }
-
   renderLandQuery(processQueryResult: ProcessQueryResult) {
-    return (
-      <ExpandedNodesQuery query={gqlGetExpandedNodes}>
-        {(getExpandedNodesResult: ExpandedNodesQueryResult) => {
-           return this.renderLocalQuery(
-             processQueryResult, getExpandedNodesResult);
-        }}
-      </ExpandedNodesQuery>
-    );
+    return this.renderWithOperations(processQueryResult);
   }
 
   render() {
