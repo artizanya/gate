@@ -48,32 +48,29 @@ function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
 //   path: NumberOrStringArray;
 // }
 
-// import {observable} from 'mobx';
-// import {observer} from 'mobx-react';
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
-//
-// class AppState {
-//   @observable timer = 0;
-//
-//   constructor() {
-//     setInterval(() => {
-//       this.timer += 1;
-//     }, 1000);
-//   }
-//
-//   resetTimer() {
-//     this.timer = 0;
-//   }
-// }
 
 interface TreeState extends FullTree {}
+
+class AppState {
+  @observable treeData: TreeState = {
+    treeData: []
+  };
+}
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
 type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 
-class ProcessTree extends Component<GetProcessVariables, TreeState> {
+interface ProcessTreeProps extends GetProcessVariables {
+  appState: AppState;
+}
 
-  constructor(props: GetProcessVariables) {
+@observer
+class ProcessTree extends Component<ProcessTreeProps, TreeState, null> {
+
+  constructor(props: ProcessTreeProps) {
     super(props);
 
     this.state = {
@@ -365,6 +362,8 @@ class SelectedButtonIndicator extends Component {
 const logo = require('./logo.svg');
 
 class App extends React.Component {
+  appState = new AppState();
+
   render() {
     return (
       <div className="App">
@@ -377,7 +376,7 @@ class App extends React.Component {
         </p>
         <ElementX id="0002" />
         <ElementY id="0001" />
-        <ProcessTree id="0000" />
+        <ProcessTree id="0000" appState={this.appState} />
         <RadioButtons />
         <SelectedButtonIndicator />
       </div>
