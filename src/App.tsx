@@ -42,38 +42,52 @@ function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
   return node.collection + '/' + node.id;
 }
 
-// type NumberOrStringArray = Array<string | number>;
+function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
+  if(a === b) return true;
+  if(a == null || b == null) return false;
+  if(a.length !== b.length) return false;
 
-// interface OnVisibilityToggleData extends rst.OnVisibilityToggleData {
-//   path: NumberOrStringArray;
-// }
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
 
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { observable, autorun } from 'mobx';
+// import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
 
+type NodePath = Array<string | number>;
+
 class AppState {
-  @observable processTreeExpandedNodes: rst.TreePath[] = [];
+  @observable processTreeExpandedNodePaths: NodePath[] = [];
 }
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
 type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 
 interface ProcessTreeProps extends GetProcessVariables {
-  appState: AppState;
+  appState: AppState | null;
 }
 
-@observer
 class ProcessTree extends Component<ProcessTreeProps, TreeState, null> {
+  appState: AppState;
 
   constructor(props: ProcessTreeProps) {
     super(props);
 
+    this.appState = props.appState;
+    props.appState = null;
+
+    this.appState = props.appState;
+
     this.state = {
       treeData: []
     };
+
+    autorun(() => this.render());
   }
 
   // constructor() {
@@ -149,18 +163,19 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState, null> {
       });
     }
 
-    // for(let treeItem of processTreeItems) {
-    //   const nodeInfo = rst.getNodeAtPath({
-    //     treeData: this.state.treeData,
-    //     getNodeKey,
-    //     path: treeItem.path,
-    //     ignoreCollapsed: false,
-    //   });
-    //
-    //   if(nodeInfo) {
-    //     nodeInfo.node.expanded = true;
-    //   }
-    // }
+    const expandedNodePaths = this.appState.processTreeExpandedNodePaths;
+    for(const expandedNodePath of expandedNodePaths) {
+      const nodeInfo = rst.getNodeAtPath({
+        treeData: this.state.treeData,
+        getNodeKey,
+        path: expandedNodePath,
+        ignoreCollapsed: false,
+      });
+
+      if(nodeInfo) {
+        nodeInfo.node.expanded = true;
+      }
+    }
 
     return (
       <div style={{ height: 600 }}>
@@ -172,6 +187,20 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState, null> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
+              // debugger;
+              const appState = this.appState;
+              const paths = appState.processTreeExpandedNodePaths;
+              // appState.processTreeExpandedNodePaths[0] = toggleData.path;
+
+              let newPaths =
+                paths.filter(path => arraysEqual(path, toggleData.path));
+
+              if(newPaths.length === paths.length) {
+                newPaths.push(toggleData.path);
+              }
+
+              appState.processTreeExpandedNodePaths = newPaths;
+
               // setExpandedNodes({
               //   variables: {
               //     path: toggleData.path as string[],
