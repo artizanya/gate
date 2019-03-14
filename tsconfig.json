@@ -20,7 +20,6 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "baseUrl": ".",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
   },
   "exclude": [
