@@ -55,9 +55,7 @@ import { observer } from 'mobx-react';
 interface TreeState extends FullTree {}
 
 class AppState {
-  @observable treeData: TreeState = {
-    treeData: []
-  };
+  @observable processTreeExpandedNodes: rst.TreePath[] = [];
 }
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
