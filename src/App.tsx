@@ -42,44 +42,41 @@ function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
   return node.collection + '/' + node.id;
 }
 
-function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
-  if(a === b) return true;
-  if(a == null || b == null) return false;
-  if(a.length !== b.length) return false;
+// function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
+//   if(a === b) return true;
+//   if(a == null || b == null) return false;
+//   if(a.length !== b.length) return false;
+//
+//   for (var i = 0; i < a.length; ++i) {
+//     if (a[i] !== b[i]) return false;
+//   }
+//   return true;
+// }
 
-  for (var i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
-}
-
-import { observable } from 'mobx';
+// import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
 
-type NodePath = Array<string | number>;
+// type NodePath = Array<string | number>;
 
-class AppState {
-  @observable processTreeExpandedNodePaths: NodePath[] = [];
-}
+// class AppState {
+//   @observable processTreeExpandedNodePaths: NodePath[] = [];
+// }
+//
+// let appState: AppState = new AppState;
+//
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
 type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 
-interface ProcessTreeProps extends GetProcessVariables {
-  appStateGetter: () => AppState;
-}
+interface ProcessTreeProps extends GetProcessVariables {}
 
 @observer
 class ProcessTree extends Component<ProcessTreeProps, TreeState> {
-  appState: AppState;
-
   constructor(props: ProcessTreeProps) {
     super(props);
-
-    this.appState = props.appStateGetter();
 
     this.state = {
       treeData: []
@@ -161,19 +158,19 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       });
     }
 
-    const expandedNodePaths = this.appState.processTreeExpandedNodePaths;
-    for(const expandedNodePath of expandedNodePaths) {
-      const nodeInfo = rst.getNodeAtPath({
-        treeData: this.state.treeData,
-        getNodeKey,
-        path: expandedNodePath,
-        ignoreCollapsed: false,
-      });
-
-      if(nodeInfo) {
-        nodeInfo.node.expanded = true;
-      }
-    }
+    // const expandedNodePaths = appState.processTreeExpandedNodePaths;
+    // for(const expandedNodePath of expandedNodePaths) {
+    //   const nodeInfo = rst.getNodeAtPath({
+    //     treeData: this.state.treeData,
+    //     getNodeKey,
+    //     path: expandedNodePath,
+    //     ignoreCollapsed: false,
+    //   });
+    //
+    //   if(nodeInfo) {
+    //     nodeInfo.node.expanded = true;
+    //   }
+    // }
 
     return (
       <div style={{ height: 600 }}>
@@ -185,19 +182,16 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              // debugger;
-              const appState = this.appState;
-              const paths = appState.processTreeExpandedNodePaths;
-              // appState.processTreeExpandedNodePaths[0] = toggleData.path;
+              // const paths = appState.processTreeExpandedNodePaths;
+              //
+              // let newPaths =
+              //   paths.filter(path => arraysEqual(path, toggleData.path));
+              //
+              // if(newPaths.length === paths.length) {
+              //   newPaths.push(toggleData.path);
+              // }
 
-              let newPaths =
-                paths.filter(path => arraysEqual(path, toggleData.path));
-
-              if(newPaths.length === paths.length) {
-                newPaths.push(toggleData.path);
-              }
-
-              appState.processTreeExpandedNodePaths = newPaths;
+              // appState.processTreeExpandedNodePaths = newPaths;
 
               // setExpandedNodes({
               //   variables: {
@@ -252,6 +246,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   }
 
   render() {
+    console.log('xxxxxxxx');
     return (
       <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>
         {(processQueryResult) => {
@@ -387,7 +382,7 @@ class SelectedButtonIndicator extends Component {
 const logo = require('./logo.svg');
 
 class App extends React.Component {
-  appState = new AppState();
+  // appState = new AppState();
 
   // <ProcessTree id="0000" appState={this.appState} />
   render() {
@@ -402,7 +397,7 @@ class App extends React.Component {
         </p>
         <ElementX id="0002" />
         <ElementY id="0001" />
-        <ProcessTree id="0000" appStateGetter={() => (this.appState)} />
+        <ProcessTree id="0000" />
         <RadioButtons />
         <SelectedButtonIndicator />
       </div>
