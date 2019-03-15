@@ -53,8 +53,8 @@ function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
   return true;
 }
 
-import { observable, autorun } from 'mobx';
-// import { observer } from 'mobx-react';
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
@@ -69,25 +69,23 @@ class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
 type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 
 interface ProcessTreeProps extends GetProcessVariables {
-  appState: AppState | null;
+  appStateGetter: () => AppState;
 }
 
-class ProcessTree extends Component<ProcessTreeProps, TreeState, null> {
+@observer
+class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   appState: AppState;
 
   constructor(props: ProcessTreeProps) {
     super(props);
 
-    this.appState = props.appState;
-    props.appState = null;
-
-    this.appState = props.appState;
+    this.appState = props.appStateGetter();
 
     this.state = {
       treeData: []
     };
 
-    autorun(() => this.render());
+    // autorun(() => this.render());
   }
 
   // constructor() {
@@ -391,6 +389,7 @@ const logo = require('./logo.svg');
 class App extends React.Component {
   appState = new AppState();
 
+  // <ProcessTree id="0000" appState={this.appState} />
   render() {
     return (
       <div className="App">
@@ -403,7 +402,7 @@ class App extends React.Component {
         </p>
         <ElementX id="0002" />
         <ElementY id="0001" />
-        <ProcessTree id="0000" appState={this.appState} />
+        <ProcessTree id="0000" appStateGetter={() => (this.appState)} />
         <RadioButtons />
         <SelectedButtonIndicator />
       </div>
