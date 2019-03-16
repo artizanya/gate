@@ -54,7 +54,6 @@ function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
 }
 
 import { computed, observable } from 'mobx';
-// import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
@@ -72,7 +71,6 @@ interface ProcessTreeProps extends GetProcessVariables {
   appState: AppState;
 }
 
-// @observer
 class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   appState: AppState;
 
@@ -85,21 +83,6 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
 
     computed(() => this.render());
   }
-
-  // constructor() {
-  //   super({treeData: [], onChange: treeData => {}});
-  // }
-
-  // constructor(props: TreeProps) {
-  //   super(props);
-  //
-  //   this.state = {
-  //     treeData: [{ title: 'Chicken', children: [{ title: 'Egg' }] }],
-  //   };
-  // }
-
-  // renderProcessQuery = (queryResult: QueryResult) => {
-  // }
 
   renderWithOperations(processQueryResult: ProcessQueryResult) {
     if(processQueryResult.loading) {
@@ -247,7 +230,6 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   }
 
   render() {
-    console.log('xxxxxxxx');
     return (
       <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>
         {(processQueryResult) => {
