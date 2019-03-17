@@ -53,15 +53,27 @@ function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
   return true;
 }
 
-import { computed, observable } from 'mobx';
+import { observable } from 'mobx';
+// import { autorun, observable } from 'mobx';
+// import { computed, observable } from 'mobx';
+import { Observer } from 'mobx-react-lite';
+// import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
 
-type NodePath = Array<string | number>;
+class ProcessItem {
+  collection: string;
+  id: string;
+  title: string;
+}
+
+type ProcessTreeNodePath = Array<string | number>;
 
 class AppState {
-  @observable processTreeExpandedNodePaths: NodePath[] = [];
+  @observable processTreeExpandedNodePaths: ProcessTreeNodePath[] = [];
+  @observable processTreeSelectedItem: ProcessItem | null = null;
+  @observable test = 0;
 }
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
@@ -72,8 +84,6 @@ interface ProcessTreeProps extends GetProcessVariables {
 }
 
 class ProcessTree extends Component<ProcessTreeProps, TreeState> {
-  appState: AppState;
-
   constructor(props: ProcessTreeProps) {
     super(props);
 
@@ -81,7 +91,8 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       treeData: []
     };
 
-    computed(() => this.render());
+    // computed(() => this.render());
+    // autorun(() => this.render());
   }
 
   renderWithOperations(processQueryResult: ProcessQueryResult) {
@@ -158,6 +169,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
 
     return (
       <div style={{ height: 600 }}>
+        {this.props.appState.test}
         <SortableTree
           treeData={this.state.treeData}
           onChange={treeData => {
@@ -215,6 +227,8 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
                 let rowContents = el.closest('.rst__rowContents');
                 if(rowContents) {
                   // rowContents.classList.add('selected');
+                  // this.appState.processTreeSelectedNode = rowInfo.node as ProcessItem;
+                  this.setProcessTreeSelectedNode(rowInfo.node as ProcessItem);
                   console.log(rowInfo.path, rowInfo.node, el.className);
                 }
               }
@@ -231,13 +245,26 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
 
   render() {
     return (
-      <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>
-        {(processQueryResult) => {
-           return this.renderLandQuery(processQueryResult);
-        }}
-      </ProcessQuery>
+      <ProcessQuery query={gqlGetProcess} variables={{ id: this.props.id }}>{
+        (processQueryResult) => (
+          <Observer>{
+            () => this.renderLandQuery(processQueryResult)
+          }</Observer>
+        )
+      }</ProcessQuery>
     );
   }
+
+ setProcessTreeSelectedNode = (processItem: ProcessItem) => {
+   // this.props.appState.processTreeSelectedItem = {
+   //   collection: processItem.collection,
+   //   id: processItem.id,
+   //   title: processItem.title,
+   // };
+   this.props.appState.test = this.props.appState.test + 1;
+   console.log(this.props.appState.test);
+   // console.log('yyyyyyyy');
+ }
 }
 
 // Render prop example for stateless functional component
