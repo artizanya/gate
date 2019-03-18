@@ -38,11 +38,53 @@ import { ApolloClient } from 'apollo-client';
 // type TreeProps = ReactSortableTreeProps;
 // type TreeProps = GetElements & ReactSortableTreeProps;
 
-function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
-  return node.collection + '/' + node.id;
+class ProcessItem {
+  collection: string;
+  id: string;
+  title: string;
 }
 
-function arraysEqual<T>(a: Array<T>, b: Array<T>): boolean {
+function generateNodeKey(processItem: ProcessItem): string {
+  return processItem.collection + '/' + processItem.id;
+}
+
+function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
+  return generateNodeKey(node as ProcessItem);
+}
+
+// function findNodeInfoByKey({
+//   treeData,
+//   index: targetIndex,
+//   getNodeKey,
+// }) {
+//   if (!treeData || treeData.length < 1) {
+//     return null;
+//   }
+//
+//   rst.walk
+//
+//   // Call the tree traversal with a pseudo-root node
+//   const result = rst.getNodeDataAtTreeIndexOrNextIndex({
+//     targetIndex,
+//     getNodeKey,
+//     node: {
+//       children: treeData,
+//       expanded: true,
+//     },
+//     currentIndex: -1,
+//     path: [],
+//     lowerSiblingCounts: [],
+//     isPseudoRoot: true,
+//   });
+//
+//   if (result.node) {
+//     return result;
+//   }
+//
+//   return null;
+// }
+
+function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
   if(a === b) return true;
   if(a == null || b == null) return false;
   if(a.length !== b.length) return false;
@@ -62,17 +104,12 @@ import { Observer } from 'mobx-react-lite';
 
 interface TreeState extends FullTree {}
 
-class ProcessItem {
-  collection: string;
-  id: string;
-  title: string;
-}
-
-type ProcessTreeNodePath = Array<string | number>;
+type TreeItemPath = Array<string | number>;
 
 class AppState {
-  @observable processTreeExpandedNodePaths: ProcessTreeNodePath[] = [];
-  @observable processTreeSelectedItem: ProcessItem | null = null;
+  @observable processTreeExpandedNodePaths: TreeItemPath[] = [];
+  @observable processTreeSelectedNodePath: TreeItemPath | null = null;
+  @observable selectedProcessItem: ProcessItem | null = null;
   @observable test = 0;
 }
 
@@ -220,20 +257,32 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
               // console.log(toggleData.path, toggleData.expanded);
             }
           }
-          generateNodeProps={rowInfo => ({
-            onClick: (event: Event) => {
-              if(event) {
-                let el = event.target as HTMLElement;
-                let rowContents = el.closest('.rst__rowContents');
-                if(rowContents) {
-                  // rowContents.classList.add('selected');
-                  // this.appState.processTreeSelectedNode = rowInfo.node as ProcessItem;
-                  this.setProcessTreeSelectedNode(rowInfo.node as ProcessItem);
-                  console.log(rowInfo.path, rowInfo.node, el.className);
+          generateNodeProps={rowInfo => {
+            const appState = this.props.appState;
+            const selectedNodePath = appState.processTreeSelectedNodePath;
+
+            let className = '';
+            if(arraysEqual(selectedNodePath, rowInfo.path)) className = 'selected';
+
+            const result = {
+              className,
+              onClick: (event: Event) => {
+                if(event) {
+                  let el = event.target as HTMLElement;
+                  let rowContents = el.closest('.rst__rowContents');
+                  if(rowContents) {
+                    // rowContents.classList.add('selected');
+                    // this.appState.processTreeSelectedNode = rowInfo.node as ProcessItem;
+                    // this.setProcessTreeSelectedNode(rowInfo.node, rowInfo.path);
+                    this.setProcessTreeSelectedNode(rowInfo);
+                    console.log(rowInfo.path, rowInfo.node, el.className);
+                  }
                 }
               }
-            },
-          })}
+            };
+
+            return result;
+          }}
         />
       </div>
     );
@@ -255,16 +304,25 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     );
   }
 
- setProcessTreeSelectedNode = (processItem: ProcessItem) => {
-   // this.props.appState.processTreeSelectedItem = {
-   //   collection: processItem.collection,
-   //   id: processItem.id,
-   //   title: processItem.title,
-   // };
-   this.props.appState.test = this.props.appState.test + 1;
-   console.log(this.props.appState.test);
-   // console.log('yyyyyyyy');
- }
+  // setProcessTreeSelectedNode = (treeItem: rst.TreeItem, path: TreeItemPath) => {
+  setProcessTreeSelectedNode = (rowInfo: rst.NodeData) => {
+    const appState = this.props.appState;
+    const treeItem = rowInfo.node;
+    const path = rowInfo.path;
+
+    const selectedItem = treeItem as ProcessItem;
+    appState.selectedProcessItem = {
+      collection: selectedItem.collection,
+      id: selectedItem.id,
+      title: selectedItem.title,
+    };
+
+    appState.processTreeSelectedNodePath = path.slice();
+
+    appState.test = this.props.appState.test + 1;
+    console.log(appState.test);
+    // console.log('yyyyyyyy');
+  }
 }
 
 // Render prop example for stateless functional component

@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.rst__rowContents.selected {
+.rst__row.selected .rst__rowContents {
   color: #fff;
   background-color: #007bff;
   /* border-color: #007bff; */
