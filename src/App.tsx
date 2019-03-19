@@ -72,7 +72,6 @@ function treePathsEqual(pr: TreePath | null, pl: TreePath | null): boolean {
 
 import { observable } from 'mobx';
 import { Observer } from 'mobx-react-lite';
-// import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
