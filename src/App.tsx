@@ -38,7 +38,7 @@ import { ApolloClient } from 'apollo-client';
 // type TreeProps = ReactSortableTreeProps;
 // type TreeProps = GetElements & ReactSortableTreeProps;
 
-class ProcessItem {
+class ProcessTreeItem {
   collection: string;
   id: string;
   title: string;
@@ -46,12 +46,12 @@ class ProcessItem {
 
 type TreePath = Array<string | number>;
 
-function generateNodeKey(processItem: ProcessItem): string {
-  return processItem.collection + '/' + processItem.id;
+function generateNodeKey(item: ProcessTreeItem): string {
+  return item.collection + '/' + item.id;
 }
 
 function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
-  return generateNodeKey(node as ProcessItem);
+  return generateNodeKey(node as ProcessTreeItem);
 }
 
 function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
@@ -69,17 +69,20 @@ function treePathsEqual(pr: TreePath | null, pl: TreePath | null): boolean {
   return arraysEqual(pr, pl);
 }
 
-
 import { observable } from 'mobx';
 import { Observer } from 'mobx-react-lite';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
 
+class ProcessTreeState {
+  @observable expandedItemPaths: TreePath[] = [];
+  @observable selectedItemPath: TreePath | null = null;
+  @observable selectedItem: ProcessTreeItem | null = null;
+}
+
 class AppState {
-  @observable processTreeExpandedNodePaths: TreePath[] = [];
-  @observable processTreeSelectedNodePath: TreePath | null = null;
-  @observable selectedProcessItem: ProcessItem | null = null;
+  @observable processTree: ProcessTreeState = new ProcessTreeState();
 }
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
@@ -158,7 +161,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
 
     const appState = this.props.appState;
 
-    const expandedNodePaths = appState.processTreeExpandedNodePaths;
+    const expandedNodePaths = appState.processTree.expandedItemPaths;
     for(const expandedNodePath of expandedNodePaths) {
       const nodeInfo = rst.getNodeAtPath({
         treeData: this.state.treeData,
@@ -172,7 +175,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       }
     }
 
-    const selectedNodePath = appState.processTreeSelectedNodePath;
+    const selectedNodePath = appState.processTree.selectedItemPath;
 
     return (
       <div style={{ height: 600 }}>
@@ -184,7 +187,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              const paths = appState.processTreeExpandedNodePaths;
+              const paths = appState.processTree.expandedItemPaths;
 
               let newPaths =
                 paths.filter(path => !treePathsEqual(path, toggleData.path));
@@ -193,7 +196,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
                 newPaths.push(toggleData.path);
               }
 
-              appState.processTreeExpandedNodePaths = newPaths;
+              appState.processTree.expandedItemPaths = newPaths;
 
               // setExpandedNodes({
               //   variables: {
@@ -227,7 +230,9 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
           }
           generateNodeProps={rowInfo => {
             let className = '';
-            if(treePathsEqual(selectedNodePath, rowInfo.path)) className = 'selected';
+            if(treePathsEqual(selectedNodePath, rowInfo.path)) {
+              className = 'selected';
+            }
 
             const result = {
               className,
@@ -274,14 +279,14 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     const treeItem = rowInfo.node;
     const path = rowInfo.path;
 
-    const selectedItem = treeItem as ProcessItem;
-    appState.selectedProcessItem = {
+    const selectedItem = treeItem as ProcessTreeItem;
+    appState.processTree.selectedItem = {
       collection: selectedItem.collection,
       id: selectedItem.id,
       title: selectedItem.title,
     };
 
-    appState.processTreeSelectedNodePath = path.slice();
+    appState.processTree.selectedItemPath = path.slice();
   }
 }
 
