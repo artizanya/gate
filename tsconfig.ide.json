@@ -5,7 +5,8 @@
     "noEmit": true,
     "paths": {
       "mobx": ["src-dep/mobx/src/mobx"],
-      "mobx-react-devtools": ["src-dep/mobx-react-devtools"]
+      "mobx-react-lite": ["src-dep/mobx-react-lite/src"],
+      "mobx-react-devtools": ["src-dep/mobx-react-devtools/src"],
       // "type-graphql": ["src-dep/type-graphql/src"],
       // "react-apollo" : ["src-dep/react-apollo/src"],
       // "apollo-client": ["src-dep/apollo-client/packages/apollo-client/src"],

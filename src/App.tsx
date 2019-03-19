@@ -44,6 +44,8 @@ class ProcessItem {
   title: string;
 }
 
+type TreePath = Array<string | number>;
+
 function generateNodeKey(processItem: ProcessItem): string {
   return processItem.collection + '/' + processItem.id;
 }
@@ -51,38 +53,6 @@ function generateNodeKey(processItem: ProcessItem): string {
 function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
   return generateNodeKey(node as ProcessItem);
 }
-
-// function findNodeInfoByKey({
-//   treeData,
-//   index: targetIndex,
-//   getNodeKey,
-// }) {
-//   if (!treeData || treeData.length < 1) {
-//     return null;
-//   }
-//
-//   rst.walk
-//
-//   // Call the tree traversal with a pseudo-root node
-//   const result = rst.getNodeDataAtTreeIndexOrNextIndex({
-//     targetIndex,
-//     getNodeKey,
-//     node: {
-//       children: treeData,
-//       expanded: true,
-//     },
-//     currentIndex: -1,
-//     path: [],
-//     lowerSiblingCounts: [],
-//     isPseudoRoot: true,
-//   });
-//
-//   if (result.node) {
-//     return result;
-//   }
-//
-//   return null;
-// }
 
 function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
   if(a === b) return true;
@@ -95,22 +65,22 @@ function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
   return true;
 }
 
+function treePathsEqual(pr: TreePath | null, pl: TreePath | null): boolean {
+  return arraysEqual(pr, pl);
+}
+
+
 import { observable } from 'mobx';
-// import { autorun, observable } from 'mobx';
-// import { computed, observable } from 'mobx';
 import { Observer } from 'mobx-react-lite';
 // import { observer } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 
 interface TreeState extends FullTree {}
 
-type TreeItemPath = Array<string | number>;
-
 class AppState {
-  @observable processTreeExpandedNodePaths: TreeItemPath[] = [];
-  @observable processTreeSelectedNodePath: TreeItemPath | null = null;
+  @observable processTreeExpandedNodePaths: TreePath[] = [];
+  @observable processTreeSelectedNodePath: TreePath | null = null;
   @observable selectedProcessItem: ProcessItem | null = null;
-  @observable test = 0;
 }
 
 class ProcessQuery extends Query<GetProcess, GetProcessVariables> {}
@@ -127,9 +97,6 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     this.state = {
       treeData: []
     };
-
-    // computed(() => this.render());
-    // autorun(() => this.render());
   }
 
   renderWithOperations(processQueryResult: ProcessQueryResult) {
@@ -190,7 +157,9 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       });
     }
 
-    const expandedNodePaths = this.props.appState.processTreeExpandedNodePaths;
+    const appState = this.props.appState;
+
+    const expandedNodePaths = appState.processTreeExpandedNodePaths;
     for(const expandedNodePath of expandedNodePaths) {
       const nodeInfo = rst.getNodeAtPath({
         treeData: this.state.treeData,
@@ -204,9 +173,10 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       }
     }
 
+    const selectedNodePath = appState.processTreeSelectedNodePath;
+
     return (
       <div style={{ height: 600 }}>
-        {this.props.appState.test}
         <SortableTree
           treeData={this.state.treeData}
           onChange={treeData => {
@@ -215,11 +185,10 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
           getNodeKey={getNodeKey}
           onVisibilityToggle={
             (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              const appState = this.props.appState;
               const paths = appState.processTreeExpandedNodePaths;
 
               let newPaths =
-                paths.filter(path => !arraysEqual(path, toggleData.path));
+                paths.filter(path => !treePathsEqual(path, toggleData.path));
 
               if(newPaths.length === paths.length) {
                 newPaths.push(toggleData.path);
@@ -258,11 +227,8 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
             }
           }
           generateNodeProps={rowInfo => {
-            const appState = this.props.appState;
-            const selectedNodePath = appState.processTreeSelectedNodePath;
-
             let className = '';
-            if(arraysEqual(selectedNodePath, rowInfo.path)) className = 'selected';
+            if(treePathsEqual(selectedNodePath, rowInfo.path)) className = 'selected';
 
             const result = {
               className,
@@ -304,8 +270,7 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     );
   }
 
-  // setProcessTreeSelectedNode = (treeItem: rst.TreeItem, path: TreeItemPath) => {
-  setProcessTreeSelectedNode = (rowInfo: rst.NodeData) => {
+  setProcessTreeSelectedNode(rowInfo: rst.NodeData) {
     const appState = this.props.appState;
     const treeItem = rowInfo.node;
     const path = rowInfo.path;
@@ -318,10 +283,6 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     };
 
     appState.processTreeSelectedNodePath = path.slice();
-
-    appState.test = this.props.appState.test + 1;
-    console.log(appState.test);
-    // console.log('yyyyyyyy');
   }
 }
 
