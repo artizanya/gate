@@ -288,6 +288,11 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   }
 }
 
+// class ProcessTreeItemView
+// extends Component<ProcessTreeItemViewProps>
+// {
+// }
+
 // Render prop example for stateless functional component
 // see https://hackernoon.com/react-stateless-functional-components-nine-wins-you-might-have-overlooked-997b0d933dbc
 // see https://cdb.reacttraining.com/use-a-render-prop-50de598f11ce
