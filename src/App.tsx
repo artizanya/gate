@@ -7,6 +7,9 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Query, QueryResult } from 'react-apollo';
 
+// import { gqlGetItem } from './graphql/land';
+// import { GetItem, GetItemVariables } from './graphql/land';
+
 import { gqlGetElement } from './graphql/land';
 import { GetElement, GetElementVariables } from './graphql/land';
 
@@ -92,6 +95,9 @@ type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 interface ProcessTreeProps extends GetProcessVariables {
   appState: AppState;
 }
+
+// class ProcessTreeItem extends Component<ProcessTreeProps, TreeState> {
+// }
 
 class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   constructor(props: ProcessTreeProps) {
