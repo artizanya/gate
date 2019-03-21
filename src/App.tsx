@@ -445,7 +445,7 @@ class App extends React.Component {
             <ProcessTree id="0000" appState={this.appState} />
           </div>
           <div className="App-main-centre col-8">
-            <p>Process Tree Item Type (collection)</p>
+            <p>Process Tree Item Collection</p>
             <p>Process Tree Item Id</p>
             <p>Process Tree Item Name</p>
             <p>Process Tree Item Description</p>
