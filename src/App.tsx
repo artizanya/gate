@@ -46,12 +46,13 @@ class ProcessTreeItem {
 
 type TreePath = Array<string | number>;
 
-function generateNodeKey(item: ProcessTreeItem): string {
-  return item.collection + '/' + item.id;
+function generateNodeKey(collection: string, id: string): string {
+  return collection + '/' + id;
 }
 
 function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
-  return generateNodeKey(node as ProcessTreeItem);
+  const item = node as ProcessTreeItem;
+  return generateNodeKey(item.collection,  item.id);
 }
 
 function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
@@ -175,7 +176,11 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       }
     }
 
-    const selectedNodePath = appState.processTree.selectedItemPath;
+    let selectedNodePath = appState.processTree.selectedItemPath;
+    if(!selectedNodePath) {
+      selectedNodePath = appState.processTree.selectedItemPath =
+        [generateNodeKey(process.collection, process.id)];
+    }
 
     return (
       <SortableTree
