@@ -7,6 +7,9 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Query, QueryResult } from 'react-apollo';
 
+// import { gqlGetItem } from './graphql/land';
+// import { GetItem, GetItemVariables } from './graphql/land';
+
 import { gqlGetElement } from './graphql/land';
 import { GetElement, GetElementVariables } from './graphql/land';
 
@@ -46,12 +49,13 @@ class ProcessTreeItem {
 
 type TreePath = Array<string | number>;
 
-function generateNodeKey(item: ProcessTreeItem): string {
-  return item.collection + '/' + item.id;
+function generateNodeKey(collection: string, id: string): string {
+  return collection + '/' + id;
 }
 
 function getNodeKey({node}: rst.TreeNode & rst.TreeIndex): string {
-  return generateNodeKey(node as ProcessTreeItem);
+  const item = node as ProcessTreeItem;
+  return generateNodeKey(item.collection,  item.id);
 }
 
 function arraysEqual<T>(a: Array<T> | null, b: Array<T> | null): boolean {
@@ -91,6 +95,9 @@ type ProcessQueryResult = QueryResult<GetProcess, GetProcessVariables>;
 interface ProcessTreeProps extends GetProcessVariables {
   appState: AppState;
 }
+
+// class ProcessTreeItem extends Component<ProcessTreeProps, TreeState> {
+// }
 
 class ProcessTree extends Component<ProcessTreeProps, TreeState> {
   constructor(props: ProcessTreeProps) {
@@ -175,86 +182,88 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
       }
     }
 
-    const selectedNodePath = appState.processTree.selectedItemPath;
+    let selectedNodePath = appState.processTree.selectedItemPath;
+    if(!selectedNodePath) {
+      selectedNodePath = appState.processTree.selectedItemPath =
+        [generateNodeKey(process.collection, process.id)];
+    }
 
     return (
-      <div style={{ height: 600 }}>
-        <SortableTree
-          treeData={this.state.treeData}
-          onChange={treeData => {
-            return this.setState({treeData});
-          }}
-          getNodeKey={getNodeKey}
-          onVisibilityToggle={
-            (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
-              const paths = appState.processTree.expandedItemPaths;
+      <SortableTree
+        treeData={this.state.treeData}
+        onChange={treeData => {
+          return this.setState({treeData});
+        }}
+        getNodeKey={getNodeKey}
+        onVisibilityToggle={
+          (toggleData: rst.OnVisibilityToggleData & rst.TreePath) => {
+            const paths = appState.processTree.expandedItemPaths;
 
-              let newPaths =
-                paths.filter(path => !treePathsEqual(path, toggleData.path));
+            let newPaths =
+              paths.filter(path => !treePathsEqual(path, toggleData.path));
 
-              if(newPaths.length === paths.length) {
-                newPaths.push(toggleData.path);
-              }
-
-              appState.processTree.expandedItemPaths = newPaths;
-
-              // setExpandedNodes({
-              //   variables: {
-              //     path: toggleData.path as string[],
-              //     expanded: toggleData.expanded
-              //   } as SetExpandedNodesVariables
-              // });
-
-              // const client = getExpandedNodesResult.client;
-
-              // let data = getExpandedNodesResult.data as GetExpandedNodes;
-              // data.treeItem.path = toggleData.path as string[];
-              // client.writeData({data});
-
-              // const treeItem = {
-              //   __typename: 'ProcessTreeItem',
-              //   path: toggleData.path as string[],
-              //   expanded: toggleData.expanded
-              // };
-
-              // client.writeData({
-              //   data: {
-              //     treeItems: [treeItem]
-              //   }
-              // });
-
-              // this.nodesExpansion.set(
-              //   toggleData.path, toggleData.expanded);
-              // console.log(toggleData.path, toggleData.expanded);
+            if(newPaths.length === paths.length) {
+              newPaths.push(toggleData.path);
             }
+
+            appState.processTree.expandedItemPaths = newPaths;
+
+            // setExpandedNodes({
+            //   variables: {
+            //     path: toggleData.path as string[],
+            //     expanded: toggleData.expanded
+            //   } as SetExpandedNodesVariables
+            // });
+
+            // const client = getExpandedNodesResult.client;
+
+            // let data = getExpandedNodesResult.data as GetExpandedNodes;
+            // data.treeItem.path = toggleData.path as string[];
+            // client.writeData({data});
+
+            // const treeItem = {
+            //   __typename: 'ProcessTreeItem',
+            //   path: toggleData.path as string[],
+            //   expanded: toggleData.expanded
+            // };
+
+            // client.writeData({
+            //   data: {
+            //     treeItems: [treeItem]
+            //   }
+            // });
+
+            // this.nodesExpansion.set(
+            //   toggleData.path, toggleData.expanded);
+            // console.log(toggleData.path, toggleData.expanded);
           }
-          generateNodeProps={rowInfo => {
-            let className = '';
-            if(treePathsEqual(selectedNodePath, rowInfo.path)) {
-              className = 'selected';
-            }
+        }
+        generateNodeProps={rowInfo => {
+          let className = '';
+          if(treePathsEqual(selectedNodePath, rowInfo.path)) {
+            className = 'selected';
+          }
 
-            const result = {
-              className,
-              onClick: (event: Event) => {
-                if(event) {
-                  let el = event.target as HTMLElement;
-                  let rowContents = el.closest('.rst__rowContents');
-                  if(rowContents) {
-                    // rowContents.classList.add('selected');
-                    // this.appState.processTreeSelectedNode = rowInfo.node as ProcessItem;
-                    // this.setProcessTreeSelectedNode(rowInfo.node, rowInfo.path);
-                    this.setProcessTreeSelectedNode(rowInfo);
-                    console.log(rowInfo.path, rowInfo.node, el.className);
-                  }
+          const result = {
+            className,
+            onClick: (event: Event) => {
+              if(event) {
+                let el = event.target as HTMLElement;
+                let rowContents = el.closest('.rst__rowContents');
+                if(rowContents) {
+                  // rowContents.classList.add('selected');
+                  // this.appState.processTreeSelectedNode = rowInfo.node as ProcessItem;
+                  // this.setProcessTreeSelectedNode(rowInfo.node, rowInfo.path);
+                  this.setProcessTreeSelectedNode(rowInfo);
+                  console.log(rowInfo.path, rowInfo.node, el.className);
                 }
               }
-            };
+            }
+          };
 
-            return result;
-          }}
-        />
-      </div>
+          return result;
+        }}
+      />
     );
   }
 
@@ -289,6 +298,11 @@ class ProcessTree extends Component<ProcessTreeProps, TreeState> {
     appState.processTree.selectedItemPath = path.slice();
   }
 }
+
+// class ProcessTreeItemView
+// extends Component<ProcessTreeItemViewProps>
+// {
+// }
 
 // Render prop example for stateless functional component
 // see https://hackernoon.com/react-stateless-functional-components-nine-wins-you-might-have-overlooked-997b0d933dbc
@@ -419,19 +433,41 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+      <div className="App container-fluid">
+        <header className="App-header row">
+          <div className="col-12">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Welcome to React</h1>
+          </div>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.ts</code> and save to reload.
-        </p>
-        <ElementX id="0002" />
-        <ElementY id="0001" />
-        <ProcessTree id="0000" appState={this.appState} />
-        <RadioButtons />
-        <SelectedButtonIndicator />
+        <div className="App-intro row">
+          <div className="col-12">
+            To get started, edit <code>src/App.ts</code> and save to reload.
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <ElementX id="0002" />
+            <ElementY id="0001" />
+          </div>
+        </div>
+        <div className="App-main row">
+          <div className="App-main-right col-4">
+            <ProcessTree id="0000" appState={this.appState} />
+          </div>
+          <div className="App-main-centre col-8">
+            <p>Process Tree Item Collection</p>
+            <p>Process Tree Item Id</p>
+            <p>Process Tree Item Name</p>
+            <p>Process Tree Item Description</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <RadioButtons />
+            <SelectedButtonIndicator />
+          </div>
+        </div>
       </div>
     );
   }

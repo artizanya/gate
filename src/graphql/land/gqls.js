@@ -8,3 +8,6 @@ export const gqlGetElement =
 
 export const gqlGetProcess =
   gqlLoader('./GetProcess.graphql');
+
+export const gqlGetItem =
+  gqlLoader('./GetItem.graphql');
