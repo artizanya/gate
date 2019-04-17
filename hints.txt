@@ -9,4 +9,6 @@ npx npm-check -u
 npm ls graphql
 npm dedup
 
+npm ci
+
 https://github.com/TypeStrong/ts-node
