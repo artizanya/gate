@@ -11,4 +11,7 @@ npm dedup
 
 npm ci
 
+npm info "eslint-config-airbnb@latest" peerDependencies
+npx install-peerdeps --dev eslint-config-airbnb
+
 https://github.com/TypeStrong/ts-node
