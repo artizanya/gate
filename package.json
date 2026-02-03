@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "apollo": "^2.6.2",
+    "apollo": "^2.34.0",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-client-preset": "^1.0.8",
@@ -11,7 +11,7 @@
     "bootstrap": "^4.3.1",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.23",
     "mobx": "^5.9.0",
     "mobx-react-devtools": "^6.1.1",
     "mobx-react-lite": "^1.1.1",
